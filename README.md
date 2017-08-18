@@ -128,3 +128,4 @@ UNLOCK TABLES;
 项目已经上传到Github，欢迎大家克隆学习。
 项目地址：[https://github.com/Dodozhou/greate_test](https://github.com/Dodozhou/greate_test)
 （若没有Github账户的同学，可以在评论区留言你的邮箱，我会将zip压缩包发到你的邮箱）
+（喜欢的请别忘了留下你的star，这是对我莫大的鼓励:-D ）
