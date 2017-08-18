@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>JavaWeb点赞测试</title>
+</head>
+<body>
+
+    <form th:action="@{/great}">
+        <label>文章ID：
+            <input name="aid"/>
+        </label>
+    <br/>
+        <label>用户ID：
+            <input name="uid"/>
+        </label>
+    <br/>
+        <button type="submit">点赞</button>
+    </form>
+
+</body>
+</html>

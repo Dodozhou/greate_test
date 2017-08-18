@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>文章详情页面</title>
+</head>
+<body>
+    <h1>文章详情：</h1>
+    <tr th:each="detail,iterStat : ${details}" >
+        <td th:text="${detail.id}">0</td>
+        <td th:text="${detail.greatNum}">0</td>
+        <br/>
+    </tr>
+</body>
+</html>
