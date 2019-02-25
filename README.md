@@ -1,5 +1,3 @@
-# greate_test
-JavaWeb 点赞功能的实现
 实现原理
 ----
 1、功能描述：一个用户对同一文章只能点赞一次，第二次就是取消赞
@@ -31,6 +29,7 @@ public class BaseController {
         return "index";
     }
 
+	//添加事务支持
     @Transactional
     @RequestMapping("/great")
     public String great(@Param("aid") int aid, @Param("uid") int uid, Model model){
@@ -41,8 +40,8 @@ public class BaseController {
             Great great=list.get(0);
             //删除记录
             greatRepository.delete(great.getId());
-            //文章点赞数减1
-            Article article=articleRepository.findOne(aid);
+            //文章点赞数减1，查询时使用Mysql行级锁解决并发覆盖问题
+            Article article=articleRepository.findByIdForUpdate(aid);
             article.setGreatNum(article.getGreatNum()-1);
             articleRepository.saveAndFlush(article);
         }else {
@@ -52,19 +51,30 @@ public class BaseController {
             great.setUid(uid);
             //添加记录
             greatRepository.saveAndFlush(great);
-            //文章点赞数加1
-            Article article=articleRepository.findOne(aid);
+            //文章点赞数加1，查询时使用Mysql行级锁解决并发覆盖问题
+            Article article=articleRepository.findByIdForUpdate(aid);
             article.setGreatNum(article.getGreatNum()+1);
             articleRepository.saveAndFlush(article);
         }
-                model.addAttribute("details",articleRepository.findAll());
+        model.addAttribute("details",articleRepository.findAll());
         return "detail";
     }
 
 }
 
 ```
+Aritcle实体的持久化仓库ArticleRepository
+```
+@Repository
+public interface ArticleRepository extends JpaRepository<Article,Integer>{
+    @Lock(value = LockModeType.PESSIMISTIC_WRITE)
+    Article findByIdForUpdate(Integer id);
+}
+```
+注意其中使用了@Lock注解以及 LockModeType.PESSIMISTIC_WRITE来让JPA使用数据库层的行级锁，在事务中，该行级锁能解决对同一条记录的并发修改问题。
+
 代码中已经附有详细注解
+
 完整实例的相关信息
 ---------
 为了突出重点，项目前端较为简陋，功能已经通过测试。
@@ -125,7 +135,11 @@ UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 ```
 
+
+
 项目已经上传到Github，欢迎大家克隆学习。
 项目地址：[https://github.com/Dodozhou/greate_test](https://github.com/Dodozhou/greate_test)
-（若没有Github账户的同学，可以在评论区留言你的邮箱，我会将zip压缩包发到你的邮箱）
-（喜欢的请别忘了留下你的star，这是对我莫大的鼓励:-D ）
+（若没有Github账户的同学，可以在评论区留言你的邮箱，我会将zip压缩包发到你的邮箱）（喜欢的请别忘了点赞哟，这是对我莫大的鼓励:-D）
+
+特别说明：本文章的目的只是单纯向大家说明点赞这个功能的实现思路。为了保证逻辑尽量清晰和简单，因而并没有涉及到性能优化和高并发访问。示例代码中的锁机制能保证并发访问下的安全性，但会对系统并发性能产生一定的影响，但在一般系统中，由于大量用户同时对同一文章集中点赞的情况并不常见，因此性能损耗扔在可以接受的范围内。
+如果大家在使用过程中确实有高并发的需要，那么可以考虑使用Redis这类缓存数据库来替代mysql。Redis是高性能的内存KV数据库，且是单线程运行的，因此性能和安全性问题都能得到完美的解决。
