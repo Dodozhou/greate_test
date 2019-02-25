@@ -31,7 +31,7 @@ public class BaseController {
         return "index";
     }
 
-
+    @Transactional
     @RequestMapping("/great")
     public String great(@Param("aid") int aid, @Param("uid") int uid, Model model){
         //查询是否有该用户对该文章的点赞记录
