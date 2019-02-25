@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -44,7 +45,7 @@ public class BaseController {
             //删除记录
             greatRepository.delete(great.getId());
             //文章点赞数减1
-            Article article=articleRepository.findOne(aid);
+            Article article=articleRepository.findByIdForUpdate(aid);
             article.setGreatNum(article.getGreatNum()-1);
             articleRepository.saveAndFlush(article);
         }else {
@@ -55,7 +56,7 @@ public class BaseController {
             //添加记录
             greatRepository.saveAndFlush(great);
             //文章点赞数加1
-            Article article=articleRepository.findOne(aid);
+            Article article=articleRepository.findByIdForUpdate(aid);
             article.setGreatNum(article.getGreatNum()+1);
             articleRepository.saveAndFlush(article);
         }
